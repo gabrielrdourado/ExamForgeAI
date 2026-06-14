@@ -52,6 +52,7 @@ npm run dev
 ```
 
 That starts both the NestJS backend and Angular frontend.
+When both are ready, the terminal prints the frontend and backend links.
 
 ## Useful Commands
 

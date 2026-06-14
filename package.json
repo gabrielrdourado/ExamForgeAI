@@ -7,7 +7,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently -n api,web -c cyan,green \"npm run dev:api\" \"npm run dev:web\"",
+    "dev": "concurrently -n api,web,links -c cyan,green,yellow \"npm run dev:api\" \"npm run dev:web\" \"node scripts/show-dev-links.js\"",
     "dev:api": "npm run start:dev --workspace studyforge-api",
     "dev:web": "npm run start --workspace studyforge-web -- --host 0.0.0.0",
     "build": "npm run build --workspace studyforge-api && npm run build --workspace studyforge-web",
