@@ -41,6 +41,18 @@ Open:
 - Frontend: `http://localhost:4200`
 - Backend: `http://localhost:3000/health`
 
+## Run With VS Code
+
+Open this folder in VS Code and press `F5`.
+
+The included launch configuration runs:
+
+```bash
+npm run dev
+```
+
+That starts both the NestJS backend and Angular frontend.
+
 ## Useful Commands
 
 ```bash
