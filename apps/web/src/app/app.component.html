@@ -17,8 +17,8 @@
   </header>
 
   <nav class="steps" aria-label="StudyForge progress">
-    <span [class.active]="screen === 'setup'">Upload</span>
-    <span [class.active]="screen === 'mode' || screen === 'manual' || screen === 'gemini'">AI mode</span>
+    <span [class.active]="screen === 'setup'">Setup</span>
+    <span [class.active]="screen === 'manual' || screen === 'gemini'">AI mode</span>
     <span [class.active]="screen === 'ready'">Ready</span>
     <span [class.active]="screen === 'exam' || screen === 'manual-grading'">Exam</span>
     <span [class.active]="screen === 'result'">Result</span>
@@ -37,32 +37,6 @@
       <div class="panel">
         <div class="section-heading">
           <span>01</span>
-          <h2>Study file</h2>
-        </div>
-
-        <label class="file-drop">
-          <input type="file" accept=".txt,.md,.pdf,.pptx" (change)="onFileSelected($event)" />
-          <strong>{{ selectedFile?.name || 'Choose file' }}</strong>
-          <span>.txt, .md, .pdf, .pptx</span>
-        </label>
-
-        @if (selectedFile) {
-          <dl class="compact-list">
-            <div>
-              <dt>Selected</dt>
-              <dd>{{ selectedFile.name }}</dd>
-            </div>
-            <div>
-              <dt>Size</dt>
-              <dd>{{ (selectedFile.size / 1024 / 1024) | number: '1.2-2' }} MB</dd>
-            </div>
-          </dl>
-        }
-      </div>
-
-      <div class="panel">
-        <div class="section-heading">
-          <span>02</span>
           <h2>Exam config</h2>
         </div>
 
@@ -103,44 +77,23 @@
             <input type="number" min="1" max="240" [(ngModel)]="config.timeLimitMinutes" />
           </label>
         </div>
-
-        <button type="button" class="primary-button" [disabled]="!selectedFile || !!loading" (click)="extractFile()">
-          Extract text
-        </button>
       </div>
-    </section>
-  }
 
-  @if (screen === 'mode') {
-    <section class="workspace">
       <div class="panel">
         <div class="section-heading">
-          <span>03</span>
+          <span>02</span>
           <h2>AI mode</h2>
         </div>
-
-        @if (extractedFile) {
-          <dl class="compact-list horizontal">
-            <div>
-              <dt>File</dt>
-              <dd>{{ extractedFile.fileName }}</dd>
-            </div>
-            <div>
-              <dt>Text</dt>
-              <dd>{{ extractedFile.characterCount | number }} characters</dd>
-            </div>
-          </dl>
-        }
 
         <div class="mode-grid">
           <button type="button" class="mode-card" [disabled]="!!loading" (click)="chooseMode('manual')">
             <strong>Manual AI Mode</strong>
-            <span>Copy prompt, paste JSON back</span>
+            <span>No upload here. Attach or paste your study file directly in the external AI.</span>
           </button>
 
           <button type="button" class="mode-card" [disabled]="!!loading" (click)="chooseMode('gemini')">
             <strong>Gemini API Mode</strong>
-            <span>Use a temporary API key</span>
+            <span>Upload the file here and use a temporary API key.</span>
           </button>
         </div>
       </div>
@@ -151,7 +104,7 @@
     <section class="workspace two-column wide-left">
       <div class="panel">
         <div class="section-heading">
-          <span>04</span>
+          <span>03</span>
           <h2>Manual prompt</h2>
         </div>
 
@@ -163,7 +116,7 @@
 
       <div class="panel">
         <div class="section-heading">
-          <span>05</span>
+          <span>04</span>
           <h2>Import exam JSON</h2>
         </div>
 
@@ -177,7 +130,33 @@
   }
 
   @if (screen === 'gemini') {
-    <section class="workspace">
+    <section class="workspace two-column">
+      <div class="panel">
+        <div class="section-heading">
+          <span>03</span>
+          <h2>Study file</h2>
+        </div>
+
+        <label class="file-drop">
+          <input type="file" accept=".txt,.md,.pdf,.pptx" (change)="onFileSelected($event)" />
+          <strong>{{ selectedFile?.name || 'Choose file for Gemini' }}</strong>
+          <span>.txt, .md, .pdf, .pptx</span>
+        </label>
+
+        @if (selectedFile) {
+          <dl class="compact-list">
+            <div>
+              <dt>Selected</dt>
+              <dd>{{ selectedFile.name }}</dd>
+            </div>
+            <div>
+              <dt>Size</dt>
+              <dd>{{ (selectedFile.size / 1024 / 1024) | number: '1.2-2' }} MB</dd>
+            </div>
+          </dl>
+        }
+      </div>
+
       <div class="panel narrow">
         <div class="section-heading">
           <span>04</span>
@@ -189,7 +168,7 @@
           <input type="password" autocomplete="off" [(ngModel)]="apiKey" placeholder="AIza..." />
         </label>
 
-        <button type="button" class="primary-button" [disabled]="!apiKey.trim() || !!loading" (click)="generateWithGemini()">
+        <button type="button" class="primary-button" [disabled]="!apiKey.trim() || !selectedFile || !!loading" (click)="generateWithGemini()">
           Generate exam
         </button>
       </div>

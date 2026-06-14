@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { AnswerMap, Exam } from './types';
 import { GeminiService } from './gemini.service';
 import { PromptsService } from './prompts.service';
@@ -17,7 +17,13 @@ export class GeminiController {
     @Body() body: { apiKey?: string; extractedText?: string; config?: unknown },
   ) {
     const config = this.validationService.validateConfig(body.config);
-    const prompt = this.promptsService.buildExamPrompt(body.extractedText ?? '', config);
+    const extractedText = body.extractedText?.trim();
+
+    if (!extractedText) {
+      throw new BadRequestException('Extracted study file text is required for Gemini API Mode.');
+    }
+
+    const prompt = this.promptsService.buildExamPrompt(extractedText, config);
     const rawExamJson = await this.geminiService.generateJson(body.apiKey ?? '', prompt);
 
     return {

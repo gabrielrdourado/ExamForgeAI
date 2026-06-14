@@ -6,7 +6,14 @@ const MAX_STUDY_TEXT_CHARS = 60000;
 @Injectable()
 export class PromptsService {
   buildExamPrompt(studyText: string, config: ExamConfig): string {
-    const trimmedText = studyText.slice(0, MAX_STUDY_TEXT_CHARS);
+    const trimmedText = studyText.trim().slice(0, MAX_STUDY_TEXT_CHARS);
+    const studyMaterialInstruction = trimmedText
+      ? ['Study material:', trimmedText]
+      : [
+          'Study material:',
+          'Use the document, notes, or text that the user attaches or pastes with this prompt.',
+          'Do not invent facts outside that study material.',
+        ];
 
     return [
       'You are StudyForge, an exam generator for personal study.',
@@ -29,8 +36,7 @@ export class PromptsService {
       '- Keep wording clear and answerable from the study material.',
       '- If mixed is requested, include both multiple-choice and open-ended questions.',
       '',
-      'Study material:',
-      trimmedText,
+      ...studyMaterialInstruction,
     ].join('\n');
   }
 

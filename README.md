@@ -1,6 +1,6 @@
 # StudyForge
 
-StudyForge is a stateless MVP web app for turning uploaded study files into a timed personal exam.
+StudyForge is a stateless MVP web app for turning study material into a timed personal exam.
 
 ## Stack
 
@@ -11,8 +11,8 @@ StudyForge is a stateless MVP web app for turning uploaded study files into a ti
 
 ## Features
 
-- Upload `.txt`, `.md`, `.pdf`, or `.pptx` study files
-- Extract readable text on the backend
+- Manual AI mode does not upload files to StudyForge; copy the prompt and attach or paste the study material in the external AI
+- Gemini API mode uploads `.txt`, `.md`, `.pdf`, or `.pptx` files and extracts readable text on the backend
 - Configure language, question count, question type, difficulty, and time limit
 - Manual AI mode for copying prompts and importing JSON
 - Gemini API mode using an API key kept only in memory

@@ -15,7 +15,6 @@ import {
 
 type Screen =
   | 'setup'
-  | 'mode'
   | 'manual'
   | 'gemini'
   | 'ready'
@@ -74,32 +73,16 @@ export class AppComponent implements OnDestroy {
     this.error = '';
   }
 
-  async extractFile(): Promise<void> {
-    if (!this.selectedFile) {
-      this.error = 'Choose a study file first.';
-      return;
-    }
-
-    const response = await this.runAction('Extracting file text...', () =>
-      this.api.extractFile(this.selectedFile as File).toPromise(),
-    );
-
-    if (!response) {
-      return;
-    }
-
-    this.extractedFile = response;
-    this.extractedText = response.text;
-    this.screen = 'mode';
-  }
-
   async chooseMode(mode: AiMode): Promise<void> {
     this.aiMode = mode;
     this.error = '';
+    this.selectedFile = null;
+    this.extractedFile = null;
+    this.extractedText = '';
 
     if (mode === 'manual') {
       const response = await this.runAction('Building manual prompt...', () =>
-        this.api.buildExamPrompt(this.extractedText, this.config).toPromise(),
+        this.api.buildExamPrompt('', this.config).toPromise(),
       );
 
       if (response) {
@@ -129,8 +112,24 @@ export class AppComponent implements OnDestroy {
       return;
     }
 
+    if (!this.selectedFile) {
+      this.error = 'Choose a study file for Gemini API Mode.';
+      return;
+    }
+
+    const extracted = await this.runAction('Extracting file text...', () =>
+      this.api.extractFile(this.selectedFile as File).toPromise(),
+    );
+
+    if (!extracted) {
+      return;
+    }
+
+    this.extractedFile = extracted;
+    this.extractedText = extracted.text;
+
     const response = await this.runAction('Generating exam with Gemini...', () =>
-      this.api.generateExamWithGemini(this.apiKey, this.extractedText, this.config).toPromise(),
+      this.api.generateExamWithGemini(this.apiKey, extracted.text, this.config).toPromise(),
     );
 
     if (response) {
