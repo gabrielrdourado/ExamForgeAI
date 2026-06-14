@@ -37,6 +37,7 @@ export class AppComponent implements OnDestroy {
     difficulty: 'medium',
     timeLimitEnabled: true,
     timeLimitMinutes: 30,
+    knowledgeScope: 'strict',
   };
 
   screen: Screen = 'setup';
@@ -292,6 +293,10 @@ export class AppComponent implements OnDestroy {
 
   formatMinutes(minutes: number): string {
     return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+  }
+
+  knowledgeScopeLabel(): string {
+    return this.config.knowledgeScope === 'expanded' ? 'Expanded theme' : 'Strict file';
   }
 
   statusLabel(status: string): string {

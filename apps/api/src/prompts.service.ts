@@ -7,12 +7,24 @@ const MAX_STUDY_TEXT_CHARS = 60000;
 export class PromptsService {
   buildExamPrompt(studyText: string, config: ExamConfig): string {
     const trimmedText = studyText.trim().slice(0, MAX_STUDY_TEXT_CHARS);
+    const knowledgeScopeInstruction =
+      config.knowledgeScope === 'expanded'
+        ? [
+            'Knowledge scope:',
+            'Use the study material as the primary reference.',
+            'You may add closely related, generally accepted knowledge about the same theme when it improves exam quality.',
+            'Do not drift into unrelated topics, and keep every question connected to the study material or its main theme.',
+          ]
+        : [
+            'Knowledge scope:',
+            'Use only the study material as the source of truth.',
+            'Do not add facts, examples, or claims from outside the attached or pasted material.',
+          ];
     const studyMaterialInstruction = trimmedText
       ? ['Study material:', trimmedText]
       : [
           'Study material:',
           'Use the document, notes, or text that the user attaches or pastes with this prompt.',
-          'Do not invent facts outside that study material.',
         ];
 
     return [
@@ -26,6 +38,7 @@ export class PromptsService {
       `Question type mix: ${config.questionType}`,
       `Time limit enabled: ${config.timeLimitEnabled ? 'true' : 'false'}`,
       `Time limit minutes: ${config.timeLimitMinutes}`,
+      `Knowledge scope: ${config.knowledgeScope}`,
       '',
       'Use this exact JSON shape:',
       '{"title":"string","description":"string","language":"en|pt-BR","difficulty":"easy|medium|hard","timeLimitEnabled":boolean,"timeLimitMinutes":number,"questions":[{"id":"q1","type":"multiple_choice|open_ended","question":"string","points":1,"topic":"string","options":[{"id":"A","text":"string"},{"id":"B","text":"string"},{"id":"C","text":"string"},{"id":"D","text":"string"}],"correctOptionId":"A","expectedAnswer":"string","rubric":"string","explanation":"string"}]}',
@@ -34,9 +47,11 @@ export class PromptsService {
       '- Multiple-choice questions must include exactly options A, B, C, D, correctOptionId, and explanation.',
       '- Open-ended questions must omit options/correctOptionId or set options to an empty array, and must include expectedAnswer, rubric, and explanation.',
       '- Points should normally be 1 per question unless a question should weigh more.',
-      '- Keep wording clear and answerable from the study material.',
+      '- Keep wording clear and answerable under the selected knowledge scope.',
       '- If mixed is requested, include both multiple-choice and open-ended questions.',
       '- Set timeLimitEnabled exactly as requested. If false, keep timeLimitMinutes as metadata only; the app will not enforce it.',
+      '',
+      ...knowledgeScopeInstruction,
       '',
       ...studyMaterialInstruction,
     ].join('\n');

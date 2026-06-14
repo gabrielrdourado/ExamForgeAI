@@ -75,6 +75,27 @@
             </select>
           </label>
 
+          <fieldset class="scope-field span-full">
+            <legend>Knowledge scope</legend>
+            <div class="scope-options">
+              <label [class.selected]="config.knowledgeScope === 'strict'">
+                <input type="radio" name="knowledgeScope" value="strict" [(ngModel)]="config.knowledgeScope" />
+                <span>
+                  <strong>Strict file</strong>
+                  <small>Questions stay inside the attached or pasted study material.</small>
+                </span>
+              </label>
+
+              <label [class.selected]="config.knowledgeScope === 'expanded'">
+                <input type="radio" name="knowledgeScope" value="expanded" [(ngModel)]="config.knowledgeScope" />
+                <span>
+                  <strong>Expanded theme</strong>
+                  <small>Questions can include closely related general knowledge.</small>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
           <label class="time-field" [class.inactive]="!config.timeLimitEnabled">
             <span class="label-row">
               <span>Time limit</span>
@@ -249,6 +270,10 @@
                 <dd>{{ exam.timeLimitEnabled ? formatMinutes(exam.timeLimitMinutes) : 'Inactive' }}</dd>
               </div>
               <div>
+                <dt>Knowledge</dt>
+                <dd>{{ knowledgeScopeLabel() }}</dd>
+              </div>
+              <div>
                 <dt>Language</dt>
                 <dd>{{ exam.language }}</dd>
               </div>
@@ -288,6 +313,10 @@
           <div>
             <dt>Mode</dt>
             <dd>{{ aiMode === 'gemini' ? 'Gemini API' : 'Manual AI' }}</dd>
+          </div>
+          <div>
+            <dt>Knowledge</dt>
+            <dd>{{ knowledgeScopeLabel() }}</dd>
           </div>
         </dl>
 

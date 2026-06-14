@@ -4,6 +4,7 @@ export type RequestedQuestionType = 'multiple_choice' | 'open_ended' | 'mixed';
 export type QuestionKind = 'multiple_choice' | 'open_ended';
 export type GradeStatus = 'correct' | 'partially_correct' | 'wrong';
 export type AiMode = 'manual' | 'gemini';
+export type KnowledgeScope = 'strict' | 'expanded';
 
 export interface ExamConfig {
   language: ExamLanguage;
@@ -12,6 +13,7 @@ export interface ExamConfig {
   difficulty: Difficulty;
   timeLimitEnabled: boolean;
   timeLimitMinutes: number;
+  knowledgeScope: KnowledgeScope;
 }
 
 export interface QuestionOption {

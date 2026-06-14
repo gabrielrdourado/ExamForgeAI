@@ -224,6 +224,10 @@ button:disabled {
   gap: 14px;
 }
 
+.span-full {
+  grid-column: 1 / -1;
+}
+
 label {
   display: grid;
   gap: 8px;
@@ -280,6 +284,49 @@ select:focus,
 textarea:focus {
   border-color: #2f7ed8;
   box-shadow: 0 0 0 3px rgba(47, 126, 216, 0.15);
+}
+
+.scope-field {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.scope-field legend {
+  margin-bottom: 8px;
+  color: #344253;
+  font-weight: 800;
+}
+
+.scope-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.scope-options label {
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #d9e0e7;
+  border-radius: 8px;
+}
+
+.scope-options label.selected {
+  border-color: #1f7a66;
+}
+
+.scope-options input {
+  width: 18px;
+  margin: 2px 0 0;
+  padding: 0;
+  accent-color: #1f7a66;
+}
+
+.scope-options span {
+  display: grid;
+  gap: 3px;
 }
 
 .input-with-unit {
@@ -362,7 +409,8 @@ textarea:focus {
 }
 
 .switch-field small,
-.choice-button small {
+.choice-button small,
+.scope-options small {
   color: #667485;
   font-weight: 650;
   line-height: 1.35;
@@ -532,7 +580,7 @@ dd {
 
 .metric-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
   margin-top: 22px;
 }
@@ -772,6 +820,7 @@ dd {
   }
 
   .form-grid,
+  .scope-options,
   .metric-row,
   .score-metrics {
     grid-template-columns: 1fr;

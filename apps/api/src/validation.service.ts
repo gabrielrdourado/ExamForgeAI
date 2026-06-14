@@ -5,6 +5,7 @@ import {
   ExamConfig,
   ExamLanguage,
   GradeStatus,
+  KnowledgeScope,
   OpenAnswerGrade,
   QuestionKind,
   QuestionOption,
@@ -20,6 +21,7 @@ const requestedQuestionTypes: RequestedQuestionType[] = [
 ];
 const questionKinds: QuestionKind[] = ['multiple_choice', 'open_ended'];
 const gradeStatuses: GradeStatus[] = ['correct', 'partially_correct', 'wrong'];
+const knowledgeScopes: KnowledgeScope[] = ['strict', 'expanded'];
 const optionIds = ['A', 'B', 'C', 'D'] as const;
 
 @Injectable()
@@ -29,6 +31,10 @@ export class ValidationService {
     const language = this.requireString(config.language, 'Exam language is required.');
     const difficulty = this.requireString(config.difficulty, 'Difficulty is required.');
     const questionType = this.requireString(config.questionType, 'Question type is required.');
+    const knowledgeScope =
+      config.knowledgeScope === undefined
+        ? 'strict'
+        : this.requireString(config.knowledgeScope, 'Knowledge scope is required.');
     const numberOfQuestions = Number(config.numberOfQuestions);
     const timeLimitEnabled = config.timeLimitEnabled !== false;
     const timeLimitMinutes = this.readTimeLimitMinutes(
@@ -49,6 +55,10 @@ export class ValidationService {
       throw new BadRequestException('Question type must be multiple_choice, open_ended, or mixed.');
     }
 
+    if (!knowledgeScopes.includes(knowledgeScope as KnowledgeScope)) {
+      throw new BadRequestException('Knowledge scope must be strict or expanded.');
+    }
+
     if (!Number.isInteger(numberOfQuestions) || numberOfQuestions < 1 || numberOfQuestions > 100) {
       throw new BadRequestException('Number of questions must be between 1 and 100.');
     }
@@ -60,6 +70,7 @@ export class ValidationService {
       numberOfQuestions,
       timeLimitEnabled,
       timeLimitMinutes,
+      knowledgeScope: knowledgeScope as KnowledgeScope,
     };
   }
 
