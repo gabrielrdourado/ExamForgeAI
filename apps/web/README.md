@@ -1,27 +1,58 @@
-# StudyforgeWeb
+# StudyForge Web
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.14.
+Angular frontend for ExamForgeAI / StudyForge.
 
-## Development server
+The web app lets a user configure an exam, choose Manual AI Mode or Gemini API Mode, take the generated exam, and review the final score.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Run
 
-## Code scaffolding
+From the repository root:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```bash
+npm run dev:web
+```
 
-## Build
+From this folder:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```bash
+npm run start -- --host 0.0.0.0
+```
 
-## Running unit tests
+Default URL:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```text
+http://localhost:4200
+```
 
-## Running end-to-end tests
+## Development Flow
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Most development should run the whole project from the repository root:
 
-## Further help
+```bash
+npm run dev
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+That starts:
+
+- NestJS API on `http://localhost:3000`
+- Angular app on `http://localhost:4200`
+- A link printer that shows both URLs when ready
+
+## Main Screens
+
+- Setup: language, question count, question type, difficulty, knowledge scope, and time limit.
+- Generation mode: Manual AI Mode or Gemini API Mode.
+- Ready: exam summary before questions are visible.
+- Exam: timer, answer progress, questions, and finish action.
+- Manual grading: prompt import flow for open-ended answers when using Manual AI Mode.
+- Result: score, time spent, counts, feedback, and explanations.
+
+## API URL
+
+The frontend currently calls the local API at:
+
+```text
+http://localhost:3000
+```
+
+This is configured in `src/app/api.service.ts`.
