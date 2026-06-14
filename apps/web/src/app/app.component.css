@@ -236,6 +236,29 @@ button:disabled {
   margin-bottom: 18px;
 }
 
+.toggle-row {
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+}
+
+.toggle-row input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  padding: 0;
+}
+
+.toggle-row span {
+  display: grid;
+  gap: 3px;
+}
+
+.toggle-row small {
+  color: #65706d;
+  font-weight: 600;
+}
+
 label {
   display: grid;
   gap: 7px;
@@ -443,6 +466,11 @@ dd {
 .timer strong {
   font-size: 2rem;
   letter-spacing: 0;
+}
+
+.timer small {
+  color: #d8e1dd;
+  font-weight: 700;
 }
 
 .question-stack,

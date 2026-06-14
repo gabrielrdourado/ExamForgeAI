@@ -74,7 +74,15 @@
 
           <label>
             Time limit
-            <input type="number" min="1" max="240" [(ngModel)]="config.timeLimitMinutes" />
+            <input type="number" min="1" max="240" [disabled]="!config.timeLimitEnabled" [(ngModel)]="config.timeLimitMinutes" />
+          </label>
+
+          <label class="toggle-row">
+            <input type="checkbox" [(ngModel)]="config.timeLimitEnabled" />
+            <span>
+              Active time limit
+              <small>Elapsed time is always measured.</small>
+            </span>
           </label>
         </div>
       </div>
@@ -195,8 +203,8 @@
             <dd>{{ exam.difficulty }}</dd>
           </div>
           <div>
-            <dt>Time</dt>
-            <dd>{{ exam.timeLimitMinutes }} min</dd>
+            <dt>Time limit</dt>
+            <dd>{{ exam.timeLimitEnabled ? exam.timeLimitMinutes + ' min' : 'Off' }}</dd>
           </div>
           <div>
             <dt>Language</dt>
@@ -213,13 +221,20 @@
     <section class="exam-layout">
       <aside class="exam-sidebar">
         <div class="timer">
-          <span>Remaining</span>
-          <strong>{{ formatTime(remainingSeconds) }}</strong>
+          <span>{{ exam.timeLimitEnabled ? 'Remaining' : 'Elapsed' }}</span>
+          <strong>{{ formatTime(exam.timeLimitEnabled ? remainingSeconds : elapsedSeconds) }}</strong>
+          <small>{{ exam.timeLimitEnabled ? 'Elapsed ' + formatTime(elapsedSeconds) : 'No active limit' }}</small>
         </div>
         <dl class="compact-list">
+          @if (exam.timeLimitEnabled) {
+            <div>
+              <dt>Elapsed</dt>
+              <dd>{{ formatTime(elapsedSeconds) }}</dd>
+            </div>
+          }
           <div>
-            <dt>Elapsed</dt>
-            <dd>{{ formatTime(elapsedSeconds) }}</dd>
+            <dt>Limit</dt>
+            <dd>{{ exam.timeLimitEnabled ? exam.timeLimitMinutes + ' min' : 'Inactive' }}</dd>
           </div>
           <div>
             <dt>Answered</dt>

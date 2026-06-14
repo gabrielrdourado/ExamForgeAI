@@ -18,6 +18,7 @@ StudyForge is a stateless MVP web app for turning study material into a timed pe
 - Gemini API mode using an API key kept only in memory
 - Ready screen before questions are visible
 - Timer starts only after `Start Exam`
+- Time limit can be active or inactive; elapsed time is always shown and used as time spent
 - Local multiple-choice grading
 - Manual or Gemini batch grading for open-ended answers
 - Final score from `0` to `10`, elapsed time, counts, and full review

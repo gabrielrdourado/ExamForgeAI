@@ -35,6 +35,7 @@ export class AppComponent implements OnDestroy {
     numberOfQuestions: 10,
     questionType: 'mixed',
     difficulty: 'medium',
+    timeLimitEnabled: true,
     timeLimitMinutes: 30,
   };
 
@@ -144,7 +145,7 @@ export class AppComponent implements OnDestroy {
 
     this.startedAt = Date.now();
     this.elapsedSeconds = 0;
-    this.remainingSeconds = this.exam.timeLimitMinutes * 60;
+    this.remainingSeconds = this.exam.timeLimitEnabled ? this.exam.timeLimitMinutes * 60 : 0;
     this.screen = 'exam';
     this.clearTimer();
     this.timerId = window.setInterval(() => this.tickTimer(), 1000);
@@ -261,7 +262,11 @@ export class AppComponent implements OnDestroy {
   }
 
   private setExam(exam: Exam): void {
-    this.exam = exam;
+    this.exam = {
+      ...exam,
+      timeLimitEnabled: this.config.timeLimitEnabled,
+      timeLimitMinutes: this.config.timeLimitMinutes,
+    };
     this.answers = {};
     this.result = null;
     this.manualGradingJson = '';
@@ -296,6 +301,12 @@ export class AppComponent implements OnDestroy {
     }
 
     this.elapsedSeconds = Math.floor((Date.now() - this.startedAt) / 1000);
+
+    if (!this.exam.timeLimitEnabled) {
+      this.remainingSeconds = 0;
+      return;
+    }
+
     this.remainingSeconds = Math.max(0, this.exam.timeLimitMinutes * 60 - this.elapsedSeconds);
 
     if (this.remainingSeconds === 0) {

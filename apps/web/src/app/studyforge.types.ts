@@ -10,6 +10,7 @@ export interface ExamConfig {
   numberOfQuestions: number;
   questionType: RequestedQuestionType;
   difficulty: Difficulty;
+  timeLimitEnabled: boolean;
   timeLimitMinutes: number;
 }
 
@@ -36,6 +37,7 @@ export interface Exam {
   description: string;
   language: ExamLanguage;
   difficulty: Difficulty;
+  timeLimitEnabled: boolean;
   timeLimitMinutes: number;
   questions: ExamQuestion[];
 }

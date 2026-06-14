@@ -30,7 +30,12 @@ export class ValidationService {
     const difficulty = this.requireString(config.difficulty, 'Difficulty is required.');
     const questionType = this.requireString(config.questionType, 'Question type is required.');
     const numberOfQuestions = Number(config.numberOfQuestions);
-    const timeLimitMinutes = Number(config.timeLimitMinutes);
+    const timeLimitEnabled = config.timeLimitEnabled !== false;
+    const timeLimitMinutes = this.readTimeLimitMinutes(
+      config.timeLimitMinutes,
+      timeLimitEnabled,
+      'Time limit must be between 1 and 240 minutes.',
+    );
 
     if (!languages.includes(language as ExamLanguage)) {
       throw new BadRequestException('Exam language must be en or pt-BR.');
@@ -48,15 +53,12 @@ export class ValidationService {
       throw new BadRequestException('Number of questions must be between 1 and 100.');
     }
 
-    if (!Number.isInteger(timeLimitMinutes) || timeLimitMinutes < 1 || timeLimitMinutes > 240) {
-      throw new BadRequestException('Time limit must be between 1 and 240 minutes.');
-    }
-
     return {
       language: language as ExamLanguage,
       difficulty: difficulty as Difficulty,
       questionType: questionType as RequestedQuestionType,
       numberOfQuestions,
+      timeLimitEnabled,
       timeLimitMinutes,
     };
   }
@@ -75,7 +77,12 @@ export class ValidationService {
 
     const language = this.requireString(exam.language, 'Exam language is required.');
     const difficulty = this.requireString(exam.difficulty, 'Exam difficulty is required.');
-    const timeLimitMinutes = Number(exam.timeLimitMinutes);
+    const timeLimitEnabled = exam.timeLimitEnabled !== false;
+    const timeLimitMinutes = this.readTimeLimitMinutes(
+      exam.timeLimitMinutes,
+      timeLimitEnabled,
+      'Exam timeLimitMinutes must be a positive number.',
+    );
 
     if (!languages.includes(language as ExamLanguage)) {
       throw new BadRequestException('Exam language must be en or pt-BR.');
@@ -85,15 +92,12 @@ export class ValidationService {
       throw new BadRequestException('Exam difficulty must be easy, medium, or hard.');
     }
 
-    if (!Number.isFinite(timeLimitMinutes) || timeLimitMinutes <= 0) {
-      throw new BadRequestException('Exam timeLimitMinutes must be a positive number.');
-    }
-
     return {
       title: this.requireString(exam.title, 'Exam title is required.'),
       description: this.requireString(exam.description, 'Exam description is required.'),
       language: language as ExamLanguage,
       difficulty: difficulty as Difficulty,
+      timeLimitEnabled,
       timeLimitMinutes,
       questions: questions.map((question, index) => this.validateQuestion(question, index)),
     };
@@ -226,6 +230,20 @@ export class ValidationService {
     }
 
     return correctOptionId as QuestionOption['id'];
+  }
+
+  private readTimeLimitMinutes(input: unknown, enabled: boolean, message: string): number {
+    if (!enabled && input === undefined) {
+      return 0;
+    }
+
+    const timeLimitMinutes = Number(input);
+
+    if (!Number.isInteger(timeLimitMinutes) || timeLimitMinutes < 1 || timeLimitMinutes > 240) {
+      throw new BadRequestException(message);
+    }
+
+    return timeLimitMinutes;
   }
 
   private parseJsonLike(raw: unknown, errorMessage: string): unknown {
