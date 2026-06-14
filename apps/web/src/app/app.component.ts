@@ -247,10 +247,51 @@ export class AppComponent implements OnDestroy {
     return this.answers[questionId] ?? '';
   }
 
-  formatTime(totalSeconds: number): string {
+  answeredCount(): number {
+    return Object.values(this.answers).filter((answer) => answer.trim().length > 0).length;
+  }
+
+  answerProgressPercent(): number {
+    if (!this.exam?.questions.length) {
+      return 0;
+    }
+
+    return Math.round((this.answeredCount() / this.exam.questions.length) * 100);
+  }
+
+  formatClock(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      const minutesRemainder = minutes % 60;
+      return `${hours}:${minutesRemainder.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`;
+    }
+
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  formatDuration(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      return `${hours} hr ${minutes} min`;
+    }
+
+    if (minutes > 0) {
+      return `${minutes} min ${seconds.toString().padStart(2, '0')} sec`;
+    }
+
+    return `${seconds} sec`;
+  }
+
+  formatMinutes(minutes: number): string {
+    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
   }
 
   statusLabel(status: string): string {

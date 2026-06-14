@@ -17,11 +17,11 @@
   </header>
 
   <nav class="steps" aria-label="StudyForge progress">
-    <span [class.active]="screen === 'setup'">Setup</span>
-    <span [class.active]="screen === 'manual' || screen === 'gemini'">AI mode</span>
-    <span [class.active]="screen === 'ready'">Ready</span>
-    <span [class.active]="screen === 'exam' || screen === 'manual-grading'">Exam</span>
-    <span [class.active]="screen === 'result'">Result</span>
+    <span [class.active]="screen === 'setup'"><b>1</b> Setup</span>
+    <span [class.active]="screen === 'manual' || screen === 'gemini'"><b>2</b> AI mode</span>
+    <span [class.active]="screen === 'ready'"><b>3</b> Ready</span>
+    <span [class.active]="screen === 'exam' || screen === 'manual-grading'"><b>4</b> Exam</span>
+    <span [class.active]="screen === 'result'"><b>5</b> Result</span>
   </nav>
 
   @if (error) {
@@ -33,11 +33,14 @@
   }
 
   @if (screen === 'setup') {
-    <section class="workspace two-column">
-      <div class="panel">
+    <section class="workspace setup-grid">
+      <section class="panel">
         <div class="section-heading">
           <span>01</span>
-          <h2>Exam config</h2>
+          <div>
+            <h2>Exam setup</h2>
+            <p>Configure the exam before choosing how it will be generated.</p>
+          </div>
         </div>
 
         <div class="form-grid">
@@ -50,7 +53,7 @@
           </label>
 
           <label>
-            Questions
+            Number of questions
             <input type="number" min="1" max="100" [(ngModel)]="config.numberOfQuestions" />
           </label>
 
@@ -72,77 +75,108 @@
             </select>
           </label>
 
-          <label>
-            Time limit
-            <input type="number" min="1" max="240" [disabled]="!config.timeLimitEnabled" [(ngModel)]="config.timeLimitMinutes" />
+          <label class="time-field" [class.inactive]="!config.timeLimitEnabled">
+            <span class="label-row">
+              <span>Time limit</span>
+              <small>minutes</small>
+            </span>
+            <span class="input-with-unit">
+              <input
+                type="number"
+                min="1"
+                max="240"
+                aria-label="Time limit in minutes"
+                [disabled]="!config.timeLimitEnabled"
+                [(ngModel)]="config.timeLimitMinutes"
+              />
+              <span>min</span>
+            </span>
           </label>
 
-          <label class="toggle-row">
+          <label class="switch-field">
             <input type="checkbox" [(ngModel)]="config.timeLimitEnabled" />
+            <span class="switch-track" aria-hidden="true"></span>
             <span>
-              Active time limit
-              <small>Elapsed time is always measured.</small>
+              <strong>Limit active</strong>
+              <small>When inactive, StudyForge still records elapsed time.</small>
             </span>
           </label>
         </div>
-      </div>
+      </section>
 
-      <div class="panel">
+      <section class="panel">
         <div class="section-heading">
           <span>02</span>
-          <h2>AI mode</h2>
+          <div>
+            <h2>Generation mode</h2>
+            <p>Choose manual import or direct Gemini generation.</p>
+          </div>
         </div>
 
-        <div class="mode-grid">
-          <button type="button" class="mode-card" [disabled]="!!loading" (click)="chooseMode('manual')">
+        <div class="choice-stack">
+          <button type="button" class="choice-button manual" [disabled]="!!loading" (click)="chooseMode('manual')">
+            <span class="choice-kicker">No file upload</span>
             <strong>Manual AI Mode</strong>
-            <span>No upload here. Attach or paste your study file directly in the external AI.</span>
+            <small>Copy a prompt, attach or paste the study material in another AI, then import JSON.</small>
           </button>
 
-          <button type="button" class="mode-card" [disabled]="!!loading" (click)="chooseMode('gemini')">
+          <button type="button" class="choice-button gemini" [disabled]="!!loading" (click)="chooseMode('gemini')">
+            <span class="choice-kicker">API key required</span>
             <strong>Gemini API Mode</strong>
-            <span>Upload the file here and use a temporary API key.</span>
+            <small>Upload the study file here and generate the exam in one Gemini request.</small>
           </button>
         </div>
-      </div>
+      </section>
     </section>
   }
 
   @if (screen === 'manual') {
-    <section class="workspace two-column wide-left">
-      <div class="panel">
+    <section class="workspace workbench-grid">
+      <section class="panel">
         <div class="section-heading">
           <span>03</span>
-          <h2>Manual prompt</h2>
+          <div>
+            <h2>Manual prompt</h2>
+            <p>Use this prompt with the study material in your external AI tool.</p>
+          </div>
         </div>
 
         <textarea class="code-area" readonly [value]="manualExamPrompt"></textarea>
-        <button type="button" class="secondary-button" (click)="copyToClipboard(manualExamPrompt)">
-          Copy prompt
-        </button>
-      </div>
+        <div class="action-row">
+          <button type="button" class="secondary-button" (click)="copyToClipboard(manualExamPrompt)">
+            Copy prompt
+          </button>
+        </div>
+      </section>
 
-      <div class="panel">
+      <section class="panel">
         <div class="section-heading">
           <span>04</span>
-          <h2>Import exam JSON</h2>
+          <div>
+            <h2>Import exam JSON</h2>
+            <p>Paste the AI response as valid JSON only.</p>
+          </div>
         </div>
 
-        <textarea class="code-area" [(ngModel)]="manualExamJson" placeholder='{"title":"...","questions":[...]}'>
-        </textarea>
-        <button type="button" class="primary-button" [disabled]="!manualExamJson.trim() || !!loading" (click)="importManualExam()">
-          Import exam
-        </button>
-      </div>
+        <textarea class="code-area" [(ngModel)]="manualExamJson" placeholder='{"title":"...","questions":[...]}'></textarea>
+        <div class="action-row">
+          <button type="button" class="primary-button" [disabled]="!manualExamJson.trim() || !!loading" (click)="importManualExam()">
+            Import exam
+          </button>
+        </div>
+      </section>
     </section>
   }
 
   @if (screen === 'gemini') {
-    <section class="workspace two-column">
-      <div class="panel">
+    <section class="workspace setup-grid">
+      <section class="panel">
         <div class="section-heading">
           <span>03</span>
-          <h2>Study file</h2>
+          <div>
+            <h2>Study file</h2>
+            <p>Gemini mode extracts this file before generating the exam.</p>
+          </div>
         </div>
 
         <label class="file-drop">
@@ -163,12 +197,15 @@
             </div>
           </dl>
         }
-      </div>
+      </section>
 
-      <div class="panel narrow">
+      <section class="panel">
         <div class="section-heading">
           <span>04</span>
-          <h2>Gemini API key</h2>
+          <div>
+            <h2>Gemini API key</h2>
+            <p>The key stays in memory for this browser session.</p>
+          </div>
         </div>
 
         <label>
@@ -176,71 +213,84 @@
           <input type="password" autocomplete="off" [(ngModel)]="apiKey" placeholder="AIza..." />
         </label>
 
-        <button type="button" class="primary-button" [disabled]="!apiKey.trim() || !selectedFile || !!loading" (click)="generateWithGemini()">
-          Generate exam
-        </button>
-      </div>
+        <div class="action-row">
+          <button type="button" class="primary-button" [disabled]="!apiKey.trim() || !selectedFile || !!loading" (click)="generateWithGemini()">
+            Generate exam
+          </button>
+        </div>
+      </section>
     </section>
   }
 
   @if (screen === 'ready' && exam) {
     <section class="workspace">
-      <div class="panel ready-panel">
-        <div class="section-heading">
-          <span>Ready</span>
-          <h2>{{ exam.title }}</h2>
+      <section class="panel ready-panel">
+        <div class="ready-layout">
+          <div>
+            <div class="section-heading compact">
+              <span>Ready</span>
+              <div>
+                <h2>{{ exam.title }}</h2>
+                <p>{{ exam.description }}</p>
+              </div>
+            </div>
+
+            <dl class="metric-row">
+              <div>
+                <dt>Questions</dt>
+                <dd>{{ exam.questions.length }}</dd>
+              </div>
+              <div>
+                <dt>Difficulty</dt>
+                <dd>{{ exam.difficulty }}</dd>
+              </div>
+              <div>
+                <dt>Time limit</dt>
+                <dd>{{ exam.timeLimitEnabled ? formatMinutes(exam.timeLimitMinutes) : 'Inactive' }}</dd>
+              </div>
+              <div>
+                <dt>Language</dt>
+                <dd>{{ exam.language }}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <button type="button" class="start-button" (click)="startExam()">Start Exam</button>
         </div>
-
-        <p class="exam-description">{{ exam.description }}</p>
-
-        <dl class="metric-row">
-          <div>
-            <dt>Questions</dt>
-            <dd>{{ exam.questions.length }}</dd>
-          </div>
-          <div>
-            <dt>Difficulty</dt>
-            <dd>{{ exam.difficulty }}</dd>
-          </div>
-          <div>
-            <dt>Time limit</dt>
-            <dd>{{ exam.timeLimitEnabled ? exam.timeLimitMinutes + ' min' : 'Off' }}</dd>
-          </div>
-          <div>
-            <dt>Language</dt>
-            <dd>{{ exam.language }}</dd>
-          </div>
-        </dl>
-
-        <button type="button" class="start-button" (click)="startExam()">Start Exam</button>
-      </div>
+      </section>
     </section>
   }
 
   @if (screen === 'exam' && exam) {
     <section class="exam-layout">
       <aside class="exam-sidebar">
-        <div class="timer">
-          <span>{{ exam.timeLimitEnabled ? 'Remaining' : 'Elapsed' }}</span>
-          <strong>{{ formatTime(exam.timeLimitEnabled ? remainingSeconds : elapsedSeconds) }}</strong>
-          <small>{{ exam.timeLimitEnabled ? 'Elapsed ' + formatTime(elapsedSeconds) : 'No active limit' }}</small>
-        </div>
+        <section class="timer">
+          <span>{{ exam.timeLimitEnabled ? 'Remaining time' : 'Elapsed time' }}</span>
+          <strong>{{ formatClock(exam.timeLimitEnabled ? remainingSeconds : elapsedSeconds) }}</strong>
+          <small>{{ exam.timeLimitEnabled ? 'Elapsed: ' + formatClock(elapsedSeconds) : 'No active time limit' }}</small>
+        </section>
+
+        <section class="progress-panel">
+          <div>
+            <span>Answered</span>
+            <strong>{{ answeredCount() }} / {{ exam.questions.length }}</strong>
+          </div>
+          <div class="progress-track">
+            <span [style.width.%]="answerProgressPercent()"></span>
+          </div>
+        </section>
+
         <dl class="compact-list">
-          @if (exam.timeLimitEnabled) {
-            <div>
-              <dt>Elapsed</dt>
-              <dd>{{ formatTime(elapsedSeconds) }}</dd>
-            </div>
-          }
           <div>
             <dt>Limit</dt>
-            <dd>{{ exam.timeLimitEnabled ? exam.timeLimitMinutes + ' min' : 'Inactive' }}</dd>
+            <dd>{{ exam.timeLimitEnabled ? formatMinutes(exam.timeLimitMinutes) : 'Inactive' }}</dd>
           </div>
           <div>
-            <dt>Answered</dt>
-            <dd>{{ (answers | keyvalue).length }} / {{ exam.questions.length }}</dd>
+            <dt>Mode</dt>
+            <dd>{{ aiMode === 'gemini' ? 'Gemini API' : 'Manual AI' }}</dd>
           </div>
         </dl>
+
         <button type="button" class="finish-button" [disabled]="!!loading" (click)="finishExam()">Finish Exam</button>
       </aside>
 
@@ -285,64 +335,74 @@
   }
 
   @if (screen === 'manual-grading') {
-    <section class="workspace two-column wide-left">
-      <div class="panel">
+    <section class="workspace workbench-grid">
+      <section class="panel">
         <div class="section-heading">
           <span>Grade</span>
-          <h2>Manual grading prompt</h2>
+          <div>
+            <h2>Manual grading prompt</h2>
+            <p>Use this for one batch grading request.</p>
+          </div>
         </div>
 
         <textarea class="code-area" readonly [value]="manualGradingPrompt"></textarea>
-        <button type="button" class="secondary-button" (click)="copyToClipboard(manualGradingPrompt)">
-          Copy grading prompt
-        </button>
-      </div>
+        <div class="action-row">
+          <button type="button" class="secondary-button" (click)="copyToClipboard(manualGradingPrompt)">
+            Copy grading prompt
+          </button>
+        </div>
+      </section>
 
-      <div class="panel">
+      <section class="panel">
         <div class="section-heading">
           <span>JSON</span>
-          <h2>Import grading</h2>
+          <div>
+            <h2>Import grading</h2>
+            <p>Paste the grading JSON returned by the external AI.</p>
+          </div>
         </div>
 
-        <textarea class="code-area" [(ngModel)]="manualGradingJson" placeholder='{"items":[...]}'>
-        </textarea>
-        <button type="button" class="primary-button" [disabled]="!manualGradingJson.trim() || !!loading" (click)="importManualGrading()">
-          Show result
-        </button>
-      </div>
+        <textarea class="code-area" [(ngModel)]="manualGradingJson" placeholder='{"items":[...]}'></textarea>
+        <div class="action-row">
+          <button type="button" class="primary-button" [disabled]="!manualGradingJson.trim() || !!loading" (click)="importManualGrading()">
+            Show result
+          </button>
+        </div>
+      </section>
     </section>
   }
 
   @if (screen === 'result' && result) {
     <section class="result-layout">
-      <div class="score-panel">
-        <span>Final score</span>
-        <strong>{{ result.finalScore | number: '1.1-1' }}/10</strong>
-        <p>{{ result.earnedPoints }}/{{ result.possiblePoints }} points</p>
-      </div>
-
-      <dl class="metric-row">
+      <section class="score-panel">
         <div>
-          <dt>Time spent</dt>
-          <dd>{{ formatTime(elapsedSeconds) }}</dd>
+          <span>Final score</span>
+          <strong>{{ result.finalScore | number: '1.1-1' }}/10</strong>
+          <p>{{ result.earnedPoints }}/{{ result.possiblePoints }} points</p>
         </div>
-        <div>
-          <dt>Total</dt>
-          <dd>{{ result.totalQuestions }}</dd>
-        </div>
-        <div>
-          <dt>Correct</dt>
-          <dd>{{ result.correctQuestions }}</dd>
-        </div>
-        <div>
-          <dt>Wrong</dt>
-          <dd>{{ result.wrongQuestions }}</dd>
-        </div>
-        <div>
-          <dt>Partial</dt>
-          <dd>{{ result.partiallyCorrectQuestions }}</dd>
-        </div>
-      </dl>
+        <dl class="score-metrics">
+          <div>
+            <dt>Time spent</dt>
+            <dd>{{ formatDuration(elapsedSeconds) }}</dd>
+          </div>
+          <div>
+            <dt>Total</dt>
+            <dd>{{ result.totalQuestions }}</dd>
+          </div>
+          <div>
+            <dt>Correct</dt>
+            <dd>{{ result.correctQuestions }}</dd>
+          </div>
+          <div>
+            <dt>Wrong</dt>
+            <dd>{{ result.wrongQuestions }}</dd>
+          </div>
+          <div>
+            <dt>Partial</dt>
+            <dd>{{ result.partiallyCorrectQuestions }}</dd>
+          </div>
+        </dl>
+      </section>
 
       <section class="review-list">
         @for (item of result.review; track item.questionId; let index = $index) {
