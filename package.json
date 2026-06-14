@@ -1,0 +1,29 @@
+{
+  "name": "exam-forge-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "StudyForge MVP: generate and take exams from uploaded study files.",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,green \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "npm run start:dev --workspace studyforge-api",
+    "dev:web": "npm run start --workspace studyforge-web -- --host 0.0.0.0",
+    "build": "npm run build --workspace studyforge-api && npm run build --workspace studyforge-web",
+    "start:api": "npm run start --workspace studyforge-api",
+    "start:web": "npm run start --workspace studyforge-web",
+    "test": "npm run test --workspace studyforge-api -- --runInBand"
+  },
+  "keywords": [
+    "studyforge",
+    "exam",
+    "angular",
+    "nestjs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
