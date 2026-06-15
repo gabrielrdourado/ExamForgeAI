@@ -61,5 +61,6 @@ The app runs these tasks in the browser:
 - JSON parsing and validation
 - `.txt`, `.md`, `.pdf`, and `.pptx` text extraction
 - direct Gemini API calls with the user's own API key
+- optional Gemini API key storage in browser `localStorage`
 - multiple-choice grading
 - final score calculation

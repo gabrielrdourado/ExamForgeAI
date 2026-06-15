@@ -32,7 +32,11 @@ Refreshing the browser intentionally resets the current exam.
 ## Important API Key Note
 
 Gemini API Mode uses the API key that the current user types into the browser.
-The key is not committed to this repository and is not stored by the app.
+The key is not committed to this repository and is not sent to any app backend.
+
+By default, the key stays in memory for the current browser session.
+Users can opt in to `Remember on this device`, which saves the key in that browser's `localStorage`.
+The app also includes a `Forget key` action that removes it from local storage and clears the field.
 
 Because this is a frontend-only app, the key is visible to that user's own browser/devtools while they use it.
 That is acceptable for this MVP because each user supplies their own key.
@@ -126,7 +130,8 @@ Use this mode when you want the browser to extract the file and call Gemini dire
 2. Select `Gemini API Mode`.
 3. Upload a supported study file: `.txt`, `.md`, `.pdf`, or `.pptx`.
 4. Enter your Gemini API key.
-5. Generate the exam.
+5. Optionally enable `Remember on this device`.
+6. Generate the exam.
 
 ## Useful Commands
 

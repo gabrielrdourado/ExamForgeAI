@@ -225,14 +225,39 @@
           <span>04</span>
           <div>
             <h2>Gemini API key</h2>
-            <p>The key stays in memory for this browser session.</p>
+            <p>Use your own key for direct browser requests.</p>
           </div>
         </div>
 
         <label>
           API key
-          <input type="password" autocomplete="off" [(ngModel)]="apiKey" placeholder="AIza..." />
+          <input
+            type="password"
+            autocomplete="off"
+            [ngModel]="apiKey"
+            (ngModelChange)="onApiKeyChange($event)"
+            placeholder="AIza..."
+          />
         </label>
+
+        <div class="action-row">
+          <label class="switch-field">
+            <input
+              type="checkbox"
+              [ngModel]="rememberApiKey"
+              (ngModelChange)="onRememberApiKeyChange($event)"
+            />
+            <span class="switch-track" aria-hidden="true"></span>
+            <span>
+              <strong>Remember on this device</strong>
+              <small>Saved only in this browser.</small>
+            </span>
+          </label>
+
+          @if (apiKey || rememberApiKey) {
+            <button type="button" class="ghost-button" (click)="forgetApiKey()">Forget key</button>
+          }
+        </div>
 
         <div class="action-row">
           <button type="button" class="primary-button" [disabled]="!apiKey.trim() || !selectedFile || !!loading" (click)="generateWithGemini()">

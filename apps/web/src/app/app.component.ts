@@ -47,6 +47,7 @@ export class AppComponent implements OnDestroy {
   extractedText = '';
   aiMode: AiMode | null = null;
   apiKey = '';
+  rememberApiKey = false;
   manualExamPrompt = '';
   manualExamJson = '';
   manualGradingPrompt = '';
@@ -62,8 +63,11 @@ export class AppComponent implements OnDestroy {
   remainingSeconds = 0;
 
   private timerId: number | null = null;
+  private readonly apiKeyStorageKey = 'studyforge.geminiApiKey';
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    this.loadRememberedApiKey();
+  }
 
   ngOnDestroy(): void {
     this.clearTimer();
@@ -112,6 +116,10 @@ export class AppComponent implements OnDestroy {
     if (!this.apiKey.trim()) {
       this.error = 'Enter a Gemini API key.';
       return;
+    }
+
+    if (this.rememberApiKey) {
+      this.persistApiKey();
     }
 
     if (!this.selectedFile) {
@@ -205,6 +213,35 @@ export class AppComponent implements OnDestroy {
     }
   }
 
+  onApiKeyChange(value: string): void {
+    this.apiKey = value;
+
+    if (this.rememberApiKey) {
+      this.persistApiKey();
+    }
+  }
+
+  onRememberApiKeyChange(remember: boolean): void {
+    this.rememberApiKey = remember;
+
+    if (remember) {
+      this.persistApiKey();
+      return;
+    }
+
+    this.removeStoredApiKey();
+  }
+
+  forgetApiKey(): void {
+    this.apiKey = '';
+    this.rememberApiKey = false;
+    this.removeStoredApiKey();
+    this.copyStatus = 'Key forgotten';
+    window.setTimeout(() => {
+      this.copyStatus = '';
+    }, 1400);
+  }
+
   async copyToClipboard(value: string): Promise<void> {
     await navigator.clipboard.writeText(value);
     this.copyStatus = 'Copied';
@@ -221,7 +258,7 @@ export class AppComponent implements OnDestroy {
     this.extractedFile = null;
     this.extractedText = '';
     this.aiMode = null;
-    this.apiKey = '';
+    this.apiKey = this.rememberApiKey ? this.readStoredApiKey() : '';
     this.manualExamPrompt = '';
     this.manualExamJson = '';
     this.manualGradingPrompt = '';
@@ -364,6 +401,47 @@ export class AppComponent implements OnDestroy {
     if (this.timerId !== null) {
       window.clearInterval(this.timerId);
       this.timerId = null;
+    }
+  }
+
+  private loadRememberedApiKey(): void {
+    const storedApiKey = this.readStoredApiKey();
+
+    if (storedApiKey) {
+      this.apiKey = storedApiKey;
+      this.rememberApiKey = true;
+    }
+  }
+
+  private persistApiKey(): void {
+    const trimmedApiKey = this.apiKey.trim();
+
+    if (!trimmedApiKey) {
+      this.removeStoredApiKey();
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(this.apiKeyStorageKey, trimmedApiKey);
+    } catch {
+      this.error = 'This browser could not save the API key.';
+      this.rememberApiKey = false;
+    }
+  }
+
+  private readStoredApiKey(): string {
+    try {
+      return window.localStorage.getItem(this.apiKeyStorageKey) ?? '';
+    } catch {
+      return '';
+    }
+  }
+
+  private removeStoredApiKey(): void {
+    try {
+      window.localStorage.removeItem(this.apiKeyStorageKey);
+    } catch {
+      // Nothing to remove if the browser blocks local storage.
     }
   }
 
