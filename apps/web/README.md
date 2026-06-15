@@ -2,14 +2,14 @@
 
 Angular frontend for ExamForgeAI / StudyForge.
 
-The web app lets a user configure an exam, choose Manual AI Mode or Gemini API Mode, take the generated exam, and review the final score.
+This is the entire runtime app. It does not need a backend server.
 
 ## Run
 
 From the repository root:
 
 ```bash
-npm run dev:web
+npm run dev
 ```
 
 From this folder:
@@ -24,19 +24,25 @@ Default URL:
 http://localhost:4200
 ```
 
-## Development Flow
+## Build
 
-Most development should run the whole project from the repository root:
+Production build:
 
 ```bash
-npm run dev
+npm run build
 ```
 
-That starts:
+GitHub Pages build from the repository root:
 
-- NestJS API on `http://localhost:3000`
-- Angular app on `http://localhost:4200`
-- A link printer that shows both URLs when ready
+```bash
+npm run build:gh-pages
+```
+
+The GitHub Pages output is:
+
+```text
+apps/web/dist/studyforge-web/browser
+```
 
 ## Main Screens
 
@@ -47,12 +53,13 @@ That starts:
 - Manual grading: prompt import flow for open-ended answers when using Manual AI Mode.
 - Result: score, time spent, counts, feedback, and explanations.
 
-## API URL
+## Browser Runtime
 
-The frontend currently calls the local API at:
+The app runs these tasks in the browser:
 
-```text
-http://localhost:3000
-```
-
-This is configured in `src/app/api.service.ts`.
+- prompt creation
+- JSON parsing and validation
+- `.txt`, `.md`, `.pdf`, and `.pptx` text extraction
+- direct Gemini API calls with the user's own API key
+- multiple-choice grading
+- final score calculation

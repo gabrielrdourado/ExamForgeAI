@@ -1,6 +1,4 @@
 const frontendUrl = 'http://localhost:4200';
-const backendUrl = 'http://localhost:3000';
-const healthUrl = `${backendUrl}/health`;
 const timeoutMs = 90000;
 const intervalMs = 1000;
 
@@ -25,14 +23,12 @@ async function waitFor(url) {
 }
 
 async function main() {
-  await Promise.all([waitFor(frontendUrl), waitFor(healthUrl)]);
+  await waitFor(frontendUrl);
 
   console.log(`
 StudyForge is ready.
 
-Frontend:      ${frontendUrl}
-Backend API:   ${backendUrl}
-Backend health: ${healthUrl}
+Frontend: ${frontendUrl}
 `);
 }
 
@@ -40,9 +36,7 @@ main().catch((error) => {
   console.log(`
 StudyForge is still starting.
 
-Frontend:      ${frontendUrl}
-Backend API:   ${backendUrl}
-Backend health: ${healthUrl}
+Frontend: ${frontendUrl}
 
 ${error.message}
 `);

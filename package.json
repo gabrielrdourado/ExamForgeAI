@@ -2,24 +2,25 @@
   "name": "exam-forge-ai",
   "version": "1.0.0",
   "private": true,
-  "description": "StudyForge MVP: generate and take exams from uploaded study files.",
+  "description": "Frontend-only AI study exam generator deployable on GitHub Pages.",
   "workspaces": [
-    "apps/*"
+    "apps/web"
   ],
   "scripts": {
-    "dev": "concurrently -n api,web,links -c cyan,green,yellow \"npm run dev:api\" \"npm run dev:web\" \"node scripts/show-dev-links.js\"",
-    "dev:api": "npm run start:dev --workspace studyforge-api",
+    "dev": "concurrently -n web,links -c green,yellow \"npm run dev:web\" \"node scripts/show-dev-links.js\"",
     "dev:web": "npm run start --workspace studyforge-web -- --host 0.0.0.0",
-    "build": "npm run build --workspace studyforge-api && npm run build --workspace studyforge-web",
-    "start:api": "npm run start --workspace studyforge-api",
+    "build": "npm run build --workspace studyforge-web",
+    "build:gh-pages": "npm run build --workspace studyforge-web -- --base-href /ExamForgeAI/",
     "start:web": "npm run start --workspace studyforge-web",
-    "test": "npm run test --workspace studyforge-api -- --runInBand"
+    "test": "tsc -p apps/web/tsconfig.spec.json --noEmit",
+    "test:browser": "npm run test --workspace studyforge-web -- --watch=false --browsers=ChromeHeadless"
   },
   "keywords": [
     "studyforge",
     "exam",
     "angular",
-    "nestjs"
+    "github-pages",
+    "gemini"
   ],
   "author": "",
   "license": "MIT",

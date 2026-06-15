@@ -1,36 +1,51 @@
 # ExamForgeAI
 
-ExamForgeAI is a local-first study app for generating and taking personal exams from study material.
+ExamForgeAI is a static, frontend-only study app for generating and taking personal exams from study material.
 The current MVP app is called StudyForge inside the UI.
 
-It supports two exam generation workflows:
+The app can be published on GitHub Pages because it runs entirely in the browser:
 
-- Manual AI Mode: copy a prompt, use any external AI tool with your study material, then paste the returned JSON into the app.
-- Gemini API Mode: upload a study file in the app and generate the exam through Gemini with a temporary API key.
+- no backend server
+- no database
+- no login
+- no stored API keys
+- no saved exam history
 
-The app has no database, login, saved history, or cloud storage. Refreshing the browser resets the current exam.
+Refreshing the browser intentionally resets the current exam.
 
 ## Features
 
-- Angular frontend and NestJS backend in one npm workspace.
-- Run frontend and backend together with one command or VS Code F5.
-- Manual mode does not upload files to the app.
-- Gemini mode supports `.txt`, `.md`, `.pdf`, and `.pptx` uploads.
+- Angular single-page app.
+- Deployable to GitHub Pages.
+- Manual AI Mode: copy a prompt, use any external AI tool, then paste JSON back into the app.
+- Gemini API Mode: each user enters their own Gemini API key and the browser calls Gemini directly.
+- Browser file extraction for `.txt`, `.md`, `.pdf`, and `.pptx`.
 - Configure language, number of questions, question type, difficulty, knowledge scope, and time limit.
-- Knowledge scope can be strict or expanded:
+- Knowledge scope options:
   - Strict file: questions stay inside the attached or pasted study material.
   - Expanded theme: questions can include closely related general knowledge.
 - Time limit can be active or inactive. Elapsed time is always measured.
-- Multiple-choice grading runs locally.
+- Multiple-choice grading runs locally in the browser.
 - Open-ended answers can be graded through Manual AI Mode or Gemini API Mode.
-- Final result includes score from `0` to `10`, time spent, counts, and full review.
+- Final result includes score from `0` to `10`, time spent, counts, feedback, and full review.
+
+## Important API Key Note
+
+Gemini API Mode uses the API key that the current user types into the browser.
+The key is not committed to this repository and is not stored by the app.
+
+Because this is a frontend-only app, the key is visible to that user's own browser/devtools while they use it.
+That is acceptable for this MVP because each user supplies their own key.
+
+For a production app where one shared API key must be protected, use a backend proxy instead of GitHub Pages only.
 
 ## Tech Stack
 
-- Angular frontend: `apps/web`
-- NestJS backend: `apps/api`
+- Angular
 - TypeScript
-- npm workspaces
+- `pdfjs-dist` for browser PDF text extraction
+- `jszip` and `fast-xml-parser` for browser PowerPoint text extraction
+- GitHub Pages for free static hosting
 
 ## Requirements
 
@@ -47,23 +62,21 @@ Install dependencies:
 npm install
 ```
 
-Run both apps:
+Run the app locally:
 
 ```bash
 npm run dev
 ```
 
-When both servers are ready, the console prints:
+When the dev server is ready, the console prints:
 
 ```text
 StudyForge is ready.
 
-Frontend:      http://localhost:4200
-Backend API:   http://localhost:3000
-Backend health: http://localhost:3000/health
+Frontend: http://localhost:4200
 ```
 
-Open the frontend:
+Open:
 
 ```text
 http://localhost:4200
@@ -79,15 +92,13 @@ The included `.vscode/launch.json` runs:
 npm run dev
 ```
 
-This starts the backend, frontend, and link printer in the same terminal.
-
 ## How To Use
 
 1. Choose the exam settings on the setup screen.
 2. Pick the knowledge scope:
    - Use `Strict file` for exams that must stay inside course notes, slides, or a study guide.
    - Use `Expanded theme` when you want the AI to include closely related general knowledge.
-3. Choose one generation mode.
+3. Choose Manual AI Mode or Gemini API Mode.
 4. Generate or import the exam JSON.
 5. Review the ready screen and click `Start Exam`.
 6. Answer the questions and finish the exam.
@@ -95,7 +106,7 @@ This starts the backend, frontend, and link printer in the same terminal.
 
 ## Manual AI Mode
 
-Use this mode when you do not want to upload files to this app.
+Use this mode when you want to use an external AI tool manually.
 
 1. Configure the exam.
 2. Select `Manual AI Mode`.
@@ -109,89 +120,69 @@ Copy that prompt to the external AI, then paste the returned grading JSON back i
 
 ## Gemini API Mode
 
-Use this mode when you want StudyForge to extract a file and call Gemini directly.
+Use this mode when you want the browser to extract the file and call Gemini directly.
 
 1. Configure the exam.
 2. Select `Gemini API Mode`.
-3. Upload a supported study file.
-4. Enter a Gemini API key.
+3. Upload a supported study file: `.txt`, `.md`, `.pdf`, or `.pptx`.
+4. Enter your Gemini API key.
 5. Generate the exam.
-
-The Gemini API key is sent to the backend for the current request only. It is not stored in a database or written to project files.
-
-## Environment
-
-The app works without a `.env` file.
-
-Optional variables:
-
-```bash
-PORT=3000
-GEMINI_MODEL=gemini-3.5-flash
-```
-
-You can copy `.env.example` if you want to override defaults.
-Do not put API keys in `.env`; the UI asks for the Gemini key only when Gemini API Mode is used.
 
 ## Useful Commands
 
 ```bash
 npm run dev
 npm run build
+npm run build:gh-pages
 npm test
-npm run test:e2e --workspace studyforge-api -- --runInBand
+npm run test:browser
 npm audit --omit=dev
 ```
 
-Run apps separately:
+`npm test` runs a TypeScript/spec typecheck. `npm run test:browser` runs Karma and requires Chrome or `CHROME_BIN`.
 
-```bash
-npm run dev:api
-npm run dev:web
+## GitHub Pages Deployment
+
+This repository includes a GitHub Actions workflow at `.github/workflows/pages.yml`.
+
+To publish:
+
+1. Push to `main`.
+2. In GitHub, open the repository settings.
+3. Go to `Pages`.
+4. Set the source to `GitHub Actions`.
+5. Run the `Deploy GitHub Pages` workflow, or push another commit to `main`.
+
+The deployed app URL will be:
+
+```text
+https://gabrielrdourado.github.io/ExamForgeAI/
 ```
 
-## Backend Endpoints
+The GitHub Pages build uses:
 
-Health:
+```bash
+npm run build:gh-pages
+```
 
-- `GET /health`
-
-Files:
-
-- `POST /files/extract`
-
-Manual mode:
-
-- `POST /manual/build-exam-prompt`
-- `POST /manual/validate-exam-json`
-- `POST /manual/build-grading-prompt`
-- `POST /manual/validate-grading-json`
-
-Gemini mode:
-
-- `POST /gemini/generate-exam`
-- `POST /gemini/grade-open-answers`
-
-Grading:
-
-- `POST /grade/multiple-choice`
-- `POST /grade/final-score`
+That builds Angular with the correct base path for `/ExamForgeAI/`.
 
 ## Project Structure
 
 ```text
 .
 ├── apps
-│   ├── api      # NestJS backend
-│   └── web      # Angular frontend
+│   └── web      # Angular frontend-only app
 ├── scripts      # local development helpers
+├── .github      # GitHub Pages deployment workflow
 ├── .vscode      # F5 launch config
 └── package.json # workspace scripts
 ```
 
 ## Troubleshooting
 
-- If `npm run dev` does not print the ready links, check that ports `3000` and `4200` are free.
-- If Gemini generation fails, confirm the API key is valid and the selected `GEMINI_MODEL` exists for that key.
+- If `npm run dev` does not print the ready link, check that port `4200` is free.
+- If Gemini generation fails, confirm the user's API key is valid and has access to the Gemini API.
 - If a manual AI response fails to import, make sure it returned JSON only, without markdown fences or explanatory text.
-- If the app cannot call the backend, confirm the backend health URL returns `200`: `http://localhost:3000/health`.
+- If PDF extraction fails for a scanned document, the PDF may contain images instead of selectable text.
+- If PPTX extraction misses content, that content may be embedded as images or unsupported objects.
