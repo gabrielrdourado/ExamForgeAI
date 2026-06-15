@@ -165,12 +165,9 @@ export class ApiService {
   }
 
   private async extractPdf(file: File): Promise<string> {
-    const [{ getDocument, GlobalWorkerOptions }, workerSrc] = await Promise.all([
-      import('pdfjs-dist'),
-      import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
-    ]);
+    const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist');
 
-    GlobalWorkerOptions.workerSrc = workerSrc.default;
+    GlobalWorkerOptions.workerSrc = new URL('assets/pdfjs/pdf.worker.min.mjs', document.baseURI).toString();
 
     const loadingTask = getDocument({
       data: new Uint8Array(await file.arrayBuffer()),
